@@ -15,7 +15,7 @@ type testCase struct {
 }
 
 var testCases = []testCase{
-	testCase{
+	{
 		template: `
 		{{define "foo"}}
 		{{if $args := . | require "arg1" | require "arg2" "int" | args }}
@@ -34,7 +34,7 @@ var testCases = []testCase{
 		expectedResult: "bartest",
 		hasError:       false,
 	},
-	testCase{
+	{
 		template: `
 		{{define "foo"}}
 		{{if $args := . | require "arg1" | require "arg2" "string" | args }}

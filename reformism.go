@@ -1,5 +1,5 @@
 /*
-Reformism provides several utility functions for native text/template
+Package reformism provides several utility functions for native text/template
 */
 package reformism
 
@@ -22,14 +22,14 @@ func Witharg(k string, v interface{}, i interface{}) Pack {
 		old := i.(Pack)
 		old.Args[k] = v
 		return old
-	} else {
-		return Pack{
-			Origin: i,
-			Args: map[string]interface{}{
-				k: v,
-			},
-		}
 	}
+	return Pack{
+		Origin: i,
+		Args: map[string]interface{}{
+			k: v,
+		},
+	}
+
 }
 
 // Done eats all pack passed to it and returns nil
@@ -42,10 +42,12 @@ func Args(p Pack) map[string]interface{} {
 	return p.Args
 }
 
+// ArgCheckError may be raised in RequireArg
 type ArgCheckError struct {
 	detail string
 }
 
+// NewArgCheckError returns a new ArgCheckError instance from detailed message
 func NewArgCheckError(s string) *ArgCheckError {
 	return &ArgCheckError{
 		detail: s,
@@ -82,12 +84,11 @@ func RequireArg(k string, trailingArgs ...interface{}) (interface{}, error) {
 			}
 		}
 		return trailingArgs[len(trailingArgs)-1], nil
-	} else {
-		return nil, NewArgCheckError("requireArg didn't receive argument modified by withArg")
 	}
+	return nil, NewArgCheckError("requireArg didn't receive argument modified by withArg")
 }
 
-// FuncsText is a FuncMap which can be passed as argument of .Func
+// FuncsText is a FuncMap which can be passed as argument of .Func of text/template
 var FuncsText = template.FuncMap{
 	"arg":     Witharg,
 	"require": RequireArg,
@@ -95,4 +96,5 @@ var FuncsText = template.FuncMap{
 	"args":    Args,
 }
 
+// FuncsHTML is a FuncMap which can be passed as argument of .Func of html/template
 var FuncsHTML = FuncsText
