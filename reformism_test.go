@@ -53,6 +53,27 @@ var testCases = []testCase{
 		expectedResult: "bartest",
 		hasError:       true,
 	},
+	{
+		template: `
+		{{ $x := slice 1 2 3 }}
+		{{ range $y := $x }}
+		{{$y}},
+		{{end}}
+		`,
+		argument: map[string]string {},
+		expectedResult: "1,2,3,",
+		hasError: false,
+	},
+	{
+		template: `
+		{{ $m := map "foo" 1 | map "bar" 2 }}
+		{{ range $k, $v := $m }}
+		{{$k}}:{{$v}},
+		{{end}}`,
+		argument: map[string]string{},
+		expectedResult: "bar:2,foo:1,",
+		hasError: false,
+	},
 }
 
 func removeWhite(s string) string {

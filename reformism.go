@@ -88,12 +88,58 @@ func RequireArg(k string, trailingArgs ...interface{}) (interface{}, error) {
 	return nil, NewArgCheckError("requireArg didn't receive argument modified by withArg")
 }
 
+func MakeSlice(args ...interface{}) []interface{} {
+	return args
+}
+
+// MapError may be raised in MakeMap
+type MapError struct {
+	detail string
+}
+
+// NewMapError returns a new ArgCheckError instance from detailed message
+func NewMapError(s string) *MapError {
+	return &MapError{
+		detail: s,
+	}
+}
+
+func (a MapError) Error() string {
+	return a.detail
+}
+
+func MakeMap(args ...interface{}) (map[string]interface{}, error) {
+	if len(args) < 2 {
+		return nil, NewMapError("arg num not required")
+	}
+	rawMap := make(map[string]interface{})
+	if oldMap, ok := args[len(args)-1].(map[string]interface{}); ok {
+		rawMap = oldMap
+		args = args[:len(args)-1]
+	}
+
+	if len(args)%2 != 0 {
+		return nil, NewMapError("arg should like key1 value1 key2 value2 ...")
+	}
+	for i := 0; i < len(args); i += 2 {
+		if key, ok := args[i].(string); !ok {
+			return nil, NewMapError("key should be string")
+		} else {
+			rawMap[key] = args[i+1]
+		}
+
+	}
+	return rawMap, nil
+}
+
 // FuncsText is a FuncMap which can be passed as argument of .Func of text/template
 var FuncsText = template.FuncMap{
 	"arg":     Witharg,
 	"require": RequireArg,
 	"done":    Done,
 	"args":    Args,
+	"slice":   MakeSlice,
+	"map":     MakeMap,
 }
 
 // FuncsHTML is a FuncMap which can be passed as argument of .Func of html/template
