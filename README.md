@@ -1,5 +1,5 @@
 # Reformism
-Add missing multiple arguments support for Go's `{text/html}/template`
+Utilities to empower Go's `{text/html}/template`.
 
 ## Usage
 ### Example
@@ -20,6 +20,21 @@ const template_text = `
 	{{ end }}
 {{ end }}
 
+
+{{ $x := slice 1 2 3 }}
+
+{{ range $y := $x }}
+    {{$y}},
+{{end}}
+// Result 1,2,3,
+
+
+{{ $m := map "foo" 1 | map "bar" 2 }}
+{{ range $k, $v := $m }}
+    {{$k}}:{{$v}},
+{{end}}
+// Result: bar:1,foo:2,
+		
 {{ template "foo" . | arg "arg1" "Arg1" | arg "arg2" 42 }}
 {{ template "foo" . | arg "arg1" "Arg1" | arg "arg2" "42" }} // will raise an error`
 
@@ -40,6 +55,22 @@ func main() {
 This package provides several utility functions for `{text/html}/template`, 
 mappings to which are defined in `.FuncsText`(for `text/template`) and 
  `.FuncsHTML`(for `html/template`)
+ 
+#### slice
+```
+{{ slice 1 2 "abc" }}
+```
+
+make `[]interface{}`
+
+#### map
+```
+{{ map "foo" 1 "bar" 2 }}
+// Equivalent to 
+{{ map "foo" 1 | map "bar" 2 }}
+```
+
+make `map[string]interface{}`
 
 #### arg
 ```
