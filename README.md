@@ -28,6 +28,23 @@ const template_text = `
 {{end}}
 // Result 1,2,3,
 
+{{ $r0 := rng 5 }}
+{{ range $e := $r0 }}
+    {{$e}},
+{{ end }}
+// result: 0,1,2,3,4
+
+{{ $r1 := rng 1,5 }}
+{{ range $e := $r1 }}
+    {{$e}},
+{{ end }}
+// result: 1,2,3,4,
+
+{{ $r2 := rng 10, 1, -3 }}
+{{ range $e := $r2 }}
+    {{$e}},
+{{end}}
+// result: 10,7,4,
 
 {{ $m := map "foo" 1 | map "bar" 2 }}
 {{ range $k, $v := $m }}
@@ -62,6 +79,14 @@ mappings to which are defined in `.FuncsText`(for `text/template`) and
 ```
 
 make `[]interface{}`
+
+#### rng
+```
+{{ rng {{count}} }} // 0, ..., count-1
+{{ rng {{start}} {{end}} }}
+{{ rng {{start}} {{end}} {{step}} }}
+```
+make `[]int` in given range
 
 #### map
 ```

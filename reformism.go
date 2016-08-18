@@ -4,9 +4,10 @@ Package reformism provides several utility functions for native text/template
 package reformism
 
 import (
-	"fmt"
+	"errors"
 	"reflect"
 	"text/template"
+	"fmt"
 )
 
 // Pack represents packed arguments and original dot
@@ -132,6 +133,45 @@ func MakeMap(args ...interface{}) (map[string]interface{}, error) {
 	return rawMap, nil
 }
 
+func inRange(start, end, n int) bool {
+	if start <= end {
+		return n >= start && n < end
+	} else {
+		return n <= start && n > end
+	}
+}
+
+func MakeRange(args ...int) ([]int, error) {
+	if len(args) < 1 || len(args) > 3 {
+		return nil, errors.New("Arg number to make range unsatisfied: 1-3 is acceptable")
+	}
+	result := make([]int, 0)
+	if len(args) == 1 {
+		for i := 0; i < args[0]; i++ {
+			result = append(result, i)
+		}
+	} else {
+		start := args[0]
+		end := args[1]
+		var step int
+		if end >= start {
+			step = 1
+		} else {
+			step = -1
+		}
+		if len(args) == 3 {
+			step = args[2]
+		}
+		if step == 0 {
+			return nil, errors.New("step=0 is illegal")
+		}
+		for i := start; inRange(start, end, i); i += step {
+			result = append(result, i)
+		}
+	}
+	return result, nil
+}
+
 // FuncsText is a FuncMap which can be passed as argument of .Func of text/template
 var FuncsText = template.FuncMap{
 	"arg":     Witharg,
@@ -140,6 +180,7 @@ var FuncsText = template.FuncMap{
 	"args":    Args,
 	"slice":   MakeSlice,
 	"map":     MakeMap,
+	"rng":     MakeRange,
 }
 
 // FuncsHTML is a FuncMap which can be passed as argument of .Func of html/template

@@ -2,9 +2,9 @@ package reformism
 
 import (
 	"bytes"
-	"text/template"
 	"strings"
 	"testing"
+	"text/template"
 )
 
 type testCase struct {
@@ -60,9 +60,9 @@ var testCases = []testCase{
 		{{$y}},
 		{{end}}
 		`,
-		argument: map[string]string {},
+		argument:       map[string]string{},
 		expectedResult: "1,2,3,",
-		hasError: false,
+		hasError:       false,
 	},
 	{
 		template: `
@@ -70,14 +70,44 @@ var testCases = []testCase{
 		{{ range $k, $v := $m }}
 		{{$k}}:{{$v}},
 		{{end}}`,
-		argument: map[string]string{},
+		argument:       map[string]string{},
 		expectedResult: "bar:2,foo:1,",
-		hasError: false,
+		hasError:       false,
+	},
+	{
+		template: `
+		{{ $r1 := rng 5 }}
+		{{ range $e := $r1 }}
+		{{$e}},
+		{{end}}`,
+		argument:       map[string]string{},
+		expectedResult: "0,1,2,3,4,",
+		hasError:       false,
+	},
+	{
+		template: `
+		{{ $r2 := rng 1 4 }}
+		{{ range $e := $r2 }}
+		{{$e}},
+		{{end}}`,
+		argument:       map[string]string{},
+		expectedResult: "1,2,3,",
+		hasError:       false,
+	},
+	{
+		template: `
+		{{ $r3 := rng 10 1 -3}}
+		{{ range $e := $r3 }}
+		{{$e}},
+		{{end}}`,
+		argument:       map[string]string{},
+		expectedResult: "10,7,4,",
+		hasError:       false,
 	},
 }
 
 func removeWhite(s string) string {
-	toRemove := []string {
+	toRemove := []string{
 		"\n", " ", "\t",
 	}
 	for _, r := range toRemove {
@@ -90,7 +120,7 @@ func runTestCase(t *testing.T, tc testCase) {
 	temp := template.Must(
 		template.New("test_template").Funcs(
 			FuncsText,
-	).Parse(tc.template))
+		).Parse(tc.template))
 	buf := new(bytes.Buffer)
 	err := temp.Execute(buf, tc.argument)
 	if (err != nil) != tc.hasError {
