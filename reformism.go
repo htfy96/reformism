@@ -124,12 +124,11 @@ func MakeMap(args ...interface{}) (map[string]interface{}, error) {
 		return nil, NewMapError("arg should like key1 value1 key2 value2 ...")
 	}
 	for i := 0; i < len(args); i += 2 {
-		if key, ok := args[i].(string); !ok {
+		key, ok := args[i].(string)
+		if !ok {
 			return nil, NewMapError("key should be string")
-		} else {
-			rawMap[key] = args[i+1]
 		}
-
+		rawMap[key] = args[i+1]
 	}
 	return rawMap, nil
 }
@@ -137,16 +136,15 @@ func MakeMap(args ...interface{}) (map[string]interface{}, error) {
 func inRange(start, end, n int) bool {
 	if start <= end {
 		return n >= start && n < end
-	} else {
-		return n <= start && n > end
 	}
+	return n <= start && n > end
 }
 
 func MakeRange(args ...int) ([]int, error) {
 	if len(args) < 1 || len(args) > 3 {
 		return nil, errors.New("Arg number to make range unsatisfied: 1-3 is acceptable")
 	}
-	result := make([]int, 0)
+	var result []int
 	if len(args) == 1 {
 		for i := 0; i < args[0]; i++ {
 			result = append(result, i)
