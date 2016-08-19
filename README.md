@@ -40,11 +40,25 @@ const template_text = `
 {{ end }}
 // result: 1,2,3,4,
 
+{{ $r1_app := $r1 | append 5 6 }}
+{{ $r1_app }}
+// result 1,2,3,4,5,6
+
 {{ $r2 := rng 10, 1, -3 }}
 {{ range $e := $r2 }}
     {{$e}},
 {{end}}
 // result: 10,7,4,
+
+{{ $el := "1,2,3" | split "," }}
+{{$el}};
+{{end}}
+// result 1;2;3;
+
+{{ $el := "1,2,3" | split "," | join ";" }}
+{{ $el }}
+{{end}}
+// result 1;2;3
 
 {{ $m := map "foo" 1 | map "bar" 2 }}
 {{ range $k, $v := $m }}
@@ -87,6 +101,28 @@ make `[]interface{}`
 {{ rng {{start}} {{end}} {{step}} }}
 ```
 make `[]int` in given range
+
+#### append
+```
+{{ append el1, el2, ..., slice }}
+{{ slice | append el1, el2 }}
+```
+
+append elements to given slice
+
+#### split
+```
+{{ split "separator" "str" }}
+{{ "str" | split "separator" }}
+```
+split `string` by given separator to `[]string`
+
+#### join
+```
+{{ "1,2,3" | split "," | join ";" }}
+```
+
+join `[]string` with given separator to `string`
 
 #### map
 ```

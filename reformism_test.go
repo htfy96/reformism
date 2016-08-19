@@ -104,6 +104,24 @@ var testCases = []testCase{
 		expectedResult: "10,7,4,",
 		hasError:       false,
 	},
+	{
+		template: `
+		{{ $r4 := rng 3 }}
+		{{ $r4_1 := $r4 | append 3 4 }}
+		{{ range $e := $r4_1 }}
+		{{$e}},
+		{{end}}`,
+		argument: map[string]string{},
+		expectedResult: "0,1,2,3,4,",
+		hasError: false,
+	},
+	{
+		template: `
+		{{ . | split "," | join ";" }}`,
+		argument: "1,2,3",
+		expectedResult: "1;2;3",
+		hasError: false,
+	},
 }
 
 func removeWhite(s string) string {

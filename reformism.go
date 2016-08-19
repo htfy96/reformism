@@ -5,9 +5,10 @@ package reformism
 
 import (
 	"errors"
-	"reflect"
-	"text/template"
 	"fmt"
+	"reflect"
+	"strings"
+	"text/template"
 )
 
 // Pack represents packed arguments and original dot
@@ -172,6 +173,33 @@ func MakeRange(args ...int) ([]int, error) {
 	return result, nil
 }
 
+func AppendSlice(args ...interface{}) ([]interface{}, error) {
+	if len(args) == 0 {
+		return nil, errors.New("No arg found for appendSlice")
+	}
+	oldSlice := reflect.ValueOf(args[len(args)-1])
+	if oldSlice.Kind() != reflect.Slice {
+		return nil, errors.New("The last arg must be an slice")
+	}
+	slice := []interface{}{}
+	for i := 0; i < oldSlice.Len(); i++ {
+		slice = append(slice, oldSlice.Index(i).Interface())
+	}
+	for _, v := range args[:len(args)-1] {
+		slice = append(slice, v)
+	}
+
+	return slice, nil
+}
+
+func SplitStr(sep, s string) []string {
+	return strings.Split(s, sep)
+}
+
+func joinStr(sep string, a []string) string {
+	return strings.Join(a, sep)
+}
+
 // FuncsText is a FuncMap which can be passed as argument of .Func of text/template
 var FuncsText = template.FuncMap{
 	"arg":     Witharg,
@@ -181,6 +209,9 @@ var FuncsText = template.FuncMap{
 	"slice":   MakeSlice,
 	"map":     MakeMap,
 	"rng":     MakeRange,
+	"append":  AppendSlice,
+	"split":   SplitStr,
+	"join":    joinStr,
 }
 
 // FuncsHTML is a FuncMap which can be passed as argument of .Func of html/template
